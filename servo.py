@@ -31,8 +31,7 @@ class Servo(object):
     def changeAngle(self, angle):
         if 0.0 <= angle and angle <= 270.0:
             pwm = MIN + (angle / 270.0) * (MAX - MIN)
-            self.p.ChangeDutyCycle(pwm)
-            time.sleep(1)        
+            self.p.ChangeDutyCycle(pwm)       
 
     def stop():
         self.p.stop()
@@ -65,6 +64,9 @@ def controlled():
 
     s1 = Servo(PIN1)
     s2 = Servo(PIN2)
+
+    s1.setup()
+    s2.setup()
 
     angle = 50.0
 
