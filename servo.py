@@ -1,7 +1,8 @@
 import RPi.GPIO as GPIO
 import time
 
-PIN = 12
+PIN1 = 38
+PIN2 = 40
 FREQ = 300 #Hz
 
 
@@ -27,11 +28,15 @@ def auto():
 
 def controlled():
     GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(PIN, GPIO.OUT)
 
-    p = GPIO.PWM(PIN, FREQ)
+    GPIO.setup(PIN1, GPIO.OUT)
+    GPIO.setup(PIN2, GPIO.OUT)    
 
-    p.start(50)
+    p1 = GPIO.PWM(PIN1, FREQ)
+    p2 = GPIO.PWM(PIN2, FREQ)
+
+    p1.start(50)
+    p2.start(50)
 
     dc = 50.0
 
@@ -39,11 +44,13 @@ def controlled():
         while True:
             dc = float(input(">>"))
             if 0.0 <= dc and dc <= 100.0:
-                p.ChangeDutyCycle(dc)
+                p1.ChangeDutyCycle(dc)
+                p2.ChangeDutyCycle(dc)
                 print("\n" + str(dc))
                 time.sleep(1)
     except KeyboardInterrupt:
-        p.stop()
+        p1.stop()
+        p2.stop()
         GPIO.cleanup()
 
 controlled()
