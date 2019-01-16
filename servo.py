@@ -2,10 +2,10 @@ import RPi.GPIO as GPIO
 import time
 
 PIN = 12
-FREQ = 333 #Hz
+FREQ = 300 #Hz
 
 
-def main():
+def auto():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(PIN, GPIO.OUT)
 
@@ -16,12 +16,34 @@ def main():
     try:
         while True:
             p.ChangeDutyCycle(50)  # turn towards 90 degree
-            time.sleep(5) # sleep 1 second
+            time.sleep(2) # sleep 1 second
             p.ChangeDutyCycle(80)  # turn towards 0 degree
-            time.sleep(5) # sleep 1 second
+            time.sleep(2) # sleep 1 second
             p.ChangeDutyCycle(10) # turn towards 180 degree
-            time.sleep(5) # sleep 1 second 
+            time.sleep(2) # sleep 1 second 
     except KeyboardInterrupt:
         p.stop()
         GPIO.cleanup()
-main()
+
+def controlled():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(PIN, GPIO.OUT)
+
+    p = GPIO.PWM(PIN, FREQ)
+
+    p.start(50)
+
+    dc = 50.0
+
+    try:
+        while True:
+            dc = float(input(">>"))
+            if 0.0 <= dc and dc <= 100.0:
+                p.ChangeDutyCycle(dc)
+                print("\n" + str(dc))
+                time.sleep(1)
+    except KeyboardInterrupt:
+        p.stop()
+        GPIO.cleanup()
+
+controlled()
