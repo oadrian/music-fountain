@@ -1,10 +1,43 @@
 import RPi.GPIO as GPIO
 import time
 
-PIN1 = 38
-PIN2 = 40
+'''
+  SERVO(pin)
+     functions:
+     * setup()
+     * reset()
+     * changeAngle(angle) 0.0 - 270.0
+     * stop()
+'''
+
+MIN = 10.0
+MAX = 70.0
 FREQ = 300 #Hz
 
+class Servo(object):
+    def __init__(self, pin):
+        self.pin = pin
+        self.p = None
+
+    def setup(self):
+        GPIO.setup(self.pin, GPIO.OUT)
+        self.p = GPIO.PWM(self.pin, FREQ)
+
+        self.p.start(50)
+
+    def reset(self):
+        self.p.ChangeDutyCycle(MIN)
+
+    def changeAngle(self, angle):
+        if 0.0 <= angle and angle <= 270.0:
+            pwm = MIN + (angle / 270.0) * (MAX - MIN)
+            self.p.ChangeDutyCycle(pwm)       
+
+    def stop():
+        self.p.stop()
+
+PIN1 = 38
+PIN2 = 40
 
 def auto():
     GPIO.setmode(GPIO.BOARD)
@@ -29,28 +62,25 @@ def auto():
 def controlled():
     GPIO.setmode(GPIO.BOARD)
 
-    GPIO.setup(PIN1, GPIO.OUT)
-    GPIO.setup(PIN2, GPIO.OUT)    
+    s1 = Servo(PIN1)
+    s2 = Servo(PIN2)
 
-    p1 = GPIO.PWM(PIN1, FREQ)
-    p2 = GPIO.PWM(PIN2, FREQ)
+    s1.setup()
+    s2.setup()
 
-    p1.start(50)
-    p2.start(50)
-
-    dc = 50.0
+    angle = 50.0
 
     try:
         while True:
-            dc = float(input(">>"))
-            if 0.0 <= dc and dc <= 100.0:
-                p1.ChangeDutyCycle(dc)
-                p2.ChangeDutyCycle(dc)
-                print("\n" + str(dc))
+            angle = float(input(">>"))
+            if 0.0 <= angle and angle <= 270.0:
+                s1.changeAngle(angle)
+                s2.changeAngle(angle)
+                print("\n" + str(angle))
                 time.sleep(1)
     except KeyboardInterrupt:
-        p1.stop()
-        p2.stop()
+        s1.stop()
+        s2.stop()
         GPIO.cleanup()
 
 controlled()
